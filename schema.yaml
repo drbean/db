@@ -1,0 +1,17 @@
+schema_class: DB::Schema
+
+lib: ./lib
+
+# connection string
+connect_info:
+  dsn  : "dbi:Pg:dbname=mood;port=5433"
+  user : "moodleuser"
+  pass : ''
+  
+# dbic loader options
+loader_options:
+  dump_directory : ./lib
+  components:
+    - InflateColumn::DateTime
+    - TimeStamp
+  naming: v4
