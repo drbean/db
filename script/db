@@ -1,0 +1,60 @@
+#!/usr/bin/perl 
+
+# Created: 06/25/2016 10:25:21 AM
+# Last Edit: 2016 Jul 09, 09:41:16 PM
+# $Id$
+
+=head1 NAME
+
+db - base database operation app script
+
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
+our $VERSION = '0.01';
+
+use strict;
+use warnings;
+
+use FindBin '$Bin';
+use lib "$Bin/../lib";
+
+=head1 SYNOPSIS
+
+Populate a database table using commandline script
+
+=cut
+
+use DB;
+DB->run;
+
+=head1 DESCRIPTION
+
+Populate a database table using commandline script
+using App::Cmd, to avoid having to use web interface
+
+=cut
+
+
+
+=head1 AUTHOR
+
+Dr Bean C<< <drbean at cpan, then a dot, (.), and org> >>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2016 Dr Bean, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
+
+# End of db
+
+# vim: set ts=8 sts=4 sw=4 noet:
+
+
