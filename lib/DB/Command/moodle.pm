@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2016 Sep 05, 07:22:03 PM
+# Last Edit: 2016 Sep 05, 09:15:40 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -31,8 +31,7 @@ sub execute {
 	my ($self, $opt, $args) = @_;
 
 	my $data;
-	$data = LoadFile
-	Whew, 	"/var/lib/moodle/populate/" . $opt->{f} . ".yaml" if $opt->{f};
+	$data = LoadFile "/var/lib/moodle/populate/" . $opt->{f} . ".yaml" if $opt->{f};
 
 	my $schema = DB::Schema->connect(
 		"dbi:Pg:dbname=$opt->{d};port=$opt->{p}"
@@ -56,13 +55,23 @@ sub execute {
 
 	}
 	if ( $opt->{a} eq "select" ) {
+		my $io = io('dbout');
+		# $io->autoflush;
+		$io->print("action: $opt->{a}\n");
 		my $all_rows = $schema->resultset($opt->{t});
 		if ( $opt->{r} and $opt->{r} eq "all" ) {
-			io('-')->print($all_rows);
+			$io->append("table: $opt->{t}\trow: $opt->{r}\n");
+			while ( my $row = $all_rows->next ) {
+				$io->append("$opt->{r}:\t" . $row->id . "\n");
+			}
 		}
 		elsif ( $opt->{c} and $opt->{r} ) {
 			my $some_rows = $all_rows->search({ $opt->{c} => $opt->{r} });
-			io('-')->print($some_rows);
+			$io->append("table: $opt->{t}\tcolumn: $opt->{c}\trow: $opt->{r}\n");
+			my $column = $opt->{c};
+			while ( my $row = $some_rows->next ) {
+				$io->append("$opt->{c}\t" . $row->$column . "\n");
+			}
 		}
 		else {
 			die "-r 'all' or -c 'column' WHERE -r 'row_value'.\n"}
