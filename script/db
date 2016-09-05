@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 
 # Created: 06/25/2016 10:25:21 AM
-# Last Edit: 2016 Sep 05, 03:54:57 PM
+# Last Edit: 2016 Sep 05, 07:22:36 PM
 # $Id$
 
 =head1 NAME
@@ -24,7 +24,7 @@ use lib "$Bin/../lib";
 
 =head1 SYNOPSIS
 
-db moodle -p PORT,ie,cluster -u USER -d DATABASE -t TABLE -f FILE -a ACTION [-c COLUMN -r ROW]
+db moodle -p PORT,ie,cluster -u USER -w PASSWD-d DATABASE -t TABLE -f FILE -a ACTION [-c COLUMN -r ROW]
 
 =cut
 

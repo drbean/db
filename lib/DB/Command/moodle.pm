@@ -1,18 +1,19 @@
 package DB::Command::moodle;
 
-# Last Edit: 2016 Sep 05, 03:57:32 PM
+# Last Edit: 2016 Sep 05, 07:22:03 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
 use warnings;
 
 use DB -command;
-sub usage_desc { "db moodle -p PORT,ie,cluster -u USER -d DATABASE -t TABLE -f FILE -a ACTION [-c COLUMN -r ROW]"}
+sub usage_desc { "db moodle -p PORT,ie,cluster -u USER -w PASSWD-d DATABASE -t TABLE -f FILE -a ACTION [-c COLUMN -r ROW]"}
 
 sub opt_spec  {
 	return (
 		["p=s", "port"]
 		, ["u=s", "user"]
+		, ["w=s", "password"]
 		, ["d=s", "database"]
 		, ["t=s", "table"]
 		, ["f=s", "file"]
