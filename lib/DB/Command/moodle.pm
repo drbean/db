@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2016 Sep 27, 03:57:07 PM
+# Last Edit: 2016 Sep 27, 04:29:56 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -66,17 +66,21 @@ sub execute {
 				$io->append("$opt->{r}:\t" . $row->id . "\n");
 			}
 		}
-		elsif ( $opt->{c} and $opt->{r} ) {
+		elsif ( $opt->{c} and $opt->{r} and $opt->{s}) {
+			my @select = split /,/, $opt->{s};
 			my $some_rows = $all_rows->search({ $opt->{c} => $opt->{r} });
-			$io->append("table: $opt->{t}\tcolumn: $opt->{c}\trow: $opt->{r}\t select: $opt->{s}\n");
-			$io->append("$opt->{c}\t$opt->{s}\n");
+			$" = "\t";
+			$io->append("table: $opt->{t}\tcolumn: $opt->{c}\trow: $opt->{r}\t select: @select\n");
+			$io->append("$opt->{c}\t@select\n");
 			my $column = $opt->{c};
 			while ( my $row = $some_rows->next ) {
-				$io->append($row->$column . "\t" . $row->get_column( $opt->{s} ) . "\n");
+				my @values;
+				push @values, $row->get_column( $_ ) for @select;
+				$io->append($row->$column . "\t@values\n");
 			}
 		}
 		else {
-			die "-r 'all' or -c 'column' WHERE -r 'row_value'.\n"}
+			die "-r 'all' or -c 'column' SELECT -s 'extra,etc' WHERE -c 'column' = -r 'row_value'.\n"}
 
 	}
 }
