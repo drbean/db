@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2016 Sep 05, 09:15:40 PM
+# Last Edit: 2016 Sep 27, 03:43:33 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -55,7 +55,7 @@ sub execute {
 
 	}
 	if ( $opt->{a} eq "select" ) {
-		my $io = io('dbout');
+		my $io = io('-');
 		# $io->autoflush;
 		$io->print("action: $opt->{a}\n");
 		my $all_rows = $schema->resultset($opt->{t});
