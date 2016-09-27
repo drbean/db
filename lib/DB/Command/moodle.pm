@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2016 Sep 27, 03:43:33 PM
+# Last Edit: 2016 Sep 27, 03:57:07 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -20,6 +20,7 @@ sub opt_spec  {
 		, ["a=s", "action"]
 		, ["c=s", "column"]
 		, ["r=s", "row"]
+		, ["s=s", "select"]
 	);
 }
 
@@ -67,10 +68,11 @@ sub execute {
 		}
 		elsif ( $opt->{c} and $opt->{r} ) {
 			my $some_rows = $all_rows->search({ $opt->{c} => $opt->{r} });
-			$io->append("table: $opt->{t}\tcolumn: $opt->{c}\trow: $opt->{r}\n");
+			$io->append("table: $opt->{t}\tcolumn: $opt->{c}\trow: $opt->{r}\t select: $opt->{s}\n");
+			$io->append("$opt->{c}\t$opt->{s}\n");
 			my $column = $opt->{c};
 			while ( my $row = $some_rows->next ) {
-				$io->append("$opt->{c}\t" . $row->$column . "\n");
+				$io->append($row->$column . "\t" . $row->get_column( $opt->{s} ) . "\n");
 			}
 		}
 		else {
