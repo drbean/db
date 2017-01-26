@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2016 Sep 27, 04:29:56 PM
+# Last Edit: 2017 Jan 26, 10:23:17 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -39,11 +39,14 @@ sub execute {
 		, $opt->{u}
 		); 
 
+	my $table = "Mdl_" . $opt->{t};
+	die "\"$table\" table?" unless $table;
+	my $source = $table ~= s/_(\w)/\u$1/g;
 	if ( $opt->{a} eq "create") {
-		my $class = $schema->resultset($opt->{t})->update_or_create($_) for @$data;
+		my $class = $schema->resultset($source)->update_or_create($_) for @$data;
 	}
 	if ( $opt->{a} eq "delete" ) {
-		my $all_rows = $schema->resultset($opt->{t});
+		my $all_rows = $schema->resultset($source);
 		if ( $opt->{r} and $opt->{r} eq "all" ) {
 			$all_rows->delete;
 		}
@@ -59,9 +62,9 @@ sub execute {
 		my $io = io('-');
 		# $io->autoflush;
 		$io->print("action: $opt->{a}\n");
-		my $all_rows = $schema->resultset($opt->{t});
+		my $all_rows = $schema->resultset($source);
 		if ( $opt->{r} and $opt->{r} eq "all" ) {
-			$io->append("table: $opt->{t}\trow: $opt->{r}\n");
+			$io->append("table: $source\trow: $opt->{r}\n");
 			while ( my $row = $all_rows->next ) {
 				$io->append("$opt->{r}:\t" . $row->id . "\n");
 			}
@@ -70,7 +73,7 @@ sub execute {
 			my @select = split /,/, $opt->{s};
 			my $some_rows = $all_rows->search({ $opt->{c} => $opt->{r} });
 			$" = "\t";
-			$io->append("table: $opt->{t}\tcolumn: $opt->{c}\trow: $opt->{r}\t select: @select\n");
+			$io->append("table: $source\tcolumn: $opt->{c}\trow: $opt->{r}\t select: @select\n");
 			$io->append("$opt->{c}\t@select\n");
 			my $column = $opt->{c};
 			while ( my $row = $some_rows->next ) {
