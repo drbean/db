@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Jan 26, 10:23:17 PM
+# Last Edit: 2017 Jan 26, 10:37:26 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -41,7 +41,7 @@ sub execute {
 
 	my $table = "Mdl_" . $opt->{t};
 	die "\"$table\" table?" unless $table;
-	my $source = $table ~= s/_(\w)/\u$1/g;
+	my ($source = $table) ~= s/_(\w)/\u$1/g;
 	if ( $opt->{a} eq "create") {
 		my $class = $schema->resultset($source)->update_or_create($_) for @$data;
 	}
