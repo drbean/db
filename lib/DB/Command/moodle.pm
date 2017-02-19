@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Feb 19, 01:29:24 PM
+# Last Edit: 2017 Feb 19, 01:42:59 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -18,7 +18,7 @@ sub opt_spec  {
 		, ["t=s", "table"]
 		, ["f=s", "file"]
 		, ["a=s", "action"]
-		, ["c=s", "column"]
+		, ["k=s", "key"]
 		, ["v=s", "value"]
 		, ["s=s", "select"]
 	);
@@ -31,7 +31,7 @@ use DB::Schema;
 sub execute {
 	my ($self, $opt, $args) = @_;
 
-	my ($port, $user, $password, $database, $table, $file, $action, $column, $value, $select) = @$opt{qw/p u w d t f a c v s/};
+	my ($port, $user, $password, $database, $table, $file, $action, $key, $value, $select) = @$opt{qw/p u w d t f a k v s/};
 	my $data;
 	$data = LoadFile "/var/lib/moodle/populate/$file.yaml" if $file;
 
@@ -55,12 +55,12 @@ sub execute {
 		if ( $value and $value eq "all" ) {
 			$all_rows->delete;
 		}
-		elsif ( $column and $value ) {
-			my $some_rows = $resultset->search({ $column => $value });
+		elsif ( $key and $value ) {
+			my $some_rows = $resultset->search({ $key => $value });
 			$some_rows->delete();
 		}
 		else {
-			die "-r 'all' or -c 'column' WHERE -v 'row_value'.\n"}
+			die "-v 'all' or -k 'key' WHERE -v 'row_value'.\n"}
 
 	}
 	if ( $action eq "select" ) {
@@ -74,20 +74,20 @@ sub execute {
 				$io->append("$value\t" . $row_data->id . "\n");
 			}
 		}
-		elsif ( $column and $value and $select ) {
+		elsif ( $key and $value and $select ) {
 			my @select = split /,/, $select ;
-			my $some_rows = $all_rows->search({ $column => $value });
+			my $some_rows = $all_rows->search({ $key => $value });
 			$" = "\t";
-			$io->append("table: $source\tcolumn: $column\trow: $value\t select: @select\n");
-			$io->append("$column\t@select\n");
+			$io->append("table: $source\tkey: $key\tvalue: $value\t select: @select\n");
+			$io->append("$key\t@select\n");
 			while ( my $row = $some_rows->next ) {
 				my @values;
 				push @values, $row->get_column( $_ ) for @select;
-				$io->append($row->$column . "\t@values\n");
+				$io->append($value . "\t@values\n");
 			}
 		}
 		else {
-			die "-r 'all' or -c 'column' SELECT -s 'extra,etc' WHERE -c 'column' = -r 'row_value'.\n"}
+			die "-v 'all' or -k 'key' SELECT -s 'extra,etc' WHERE -k 'column' = -v 'row_value'.\n"}
 
 	}
 }
