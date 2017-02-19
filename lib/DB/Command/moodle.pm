@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Feb 19, 01:42:59 PM
+# Last Edit: 2017 Feb 19, 02:11:49 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -75,15 +75,25 @@ sub execute {
 			}
 		}
 		elsif ( $key and $value and $select ) {
-			my @select = split /,/, $select ;
 			my $some_rows = $all_rows->search({ $key => $value });
 			$" = "\t";
-			$io->append("table: $source\tkey: $key\tvalue: $value\t select: @select\n");
-			$io->append("$key\t@select\n");
+			my @columns;
+			if ( $select eq "all" ) {
+				@columns = $some_rows->result_source->columns;
+			}
+			else {
+				@columns = split /,/, $select ;
+			}
+			$io->append("table: $source\tkey: $key\tvalue: $value\t select: @columns\n");
+			$io->append("$key\t@columns\n");
 			while ( my $row = $some_rows->next ) {
 				my @values;
-				push @values, $row->get_column( $_ ) for @select;
-				$io->append($value . "\t@values\n");
+				for my $column ( @columns ) {
+					my $other_value = $row->get_column( $column ); 
+					$other_value //= "NULL";
+					push @values, $other_value;
+				}
+				$io->append("$value\t@values\n");
 			}
 		}
 		else {
