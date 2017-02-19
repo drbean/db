@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Feb 19, 12:53:20 PM
+# Last Edit: 2017 Feb 19, 01:29:24 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -19,7 +19,7 @@ sub opt_spec  {
 		, ["f=s", "file"]
 		, ["a=s", "action"]
 		, ["c=s", "column"]
-		, ["r=s", "row"]
+		, ["v=s", "value"]
 		, ["s=s", "select"]
 	);
 }
@@ -31,7 +31,7 @@ use DB::Schema;
 sub execute {
 	my ($self, $opt, $args) = @_;
 
-	my ($port, $user, $password, $database, $table, $file, $action, $column, $row, $select) = @$opt{qw/p u w d t f a c r s/};
+	my ($port, $user, $password, $database, $table, $file, $action, $column, $value, $select) = @$opt{qw/p u w d t f a c v s/};
 	my $data;
 	$data = LoadFile "/var/lib/moodle/populate/$file.yaml" if $file;
 
@@ -52,15 +52,15 @@ sub execute {
 	}
 	if ( $action eq "delete" ) {
 		my $all_rows = $resultset;
-		if ( $row and $row eq "all" ) {
+		if ( $value and $value eq "all" ) {
 			$all_rows->delete;
 		}
-		elsif ( $column and $row ) {
-			my $some_rows = $resultset->search({ $column => $row });
+		elsif ( $column and $value ) {
+			my $some_rows = $resultset->search({ $column => $value });
 			$some_rows->delete();
 		}
 		else {
-			die "-r 'all' or -c 'column' WHERE -r 'row_value'.\n"}
+			die "-r 'all' or -c 'column' WHERE -v 'row_value'.\n"}
 
 	}
 	if ( $action eq "select" ) {
@@ -68,17 +68,17 @@ sub execute {
 		# $io->autoflush;
 		$io->print("action: $action\n");
 		my $all_rows = $resultset;
-		if ( $row and $row eq "all" ) {
-			$io->append("table: $source\trow: $row\n");
+		if ( $value and $value eq "all" ) {
+			$io->append("table: $source\trow: $value\n");
 			while ( my $row_data = $all_rows->next ) {
-				$io->append("$row\t" . $row_data->id . "\n");
+				$io->append("$value\t" . $row_data->id . "\n");
 			}
 		}
-		elsif ( $column and $row and $select ) {
+		elsif ( $column and $value and $select ) {
 			my @select = split /,/, $select ;
-			my $some_rows = $all_rows->search({ $column => $row });
+			my $some_rows = $all_rows->search({ $column => $value });
 			$" = "\t";
-			$io->append("table: $source\tcolumn: $column\trow: $row\t select: @select\n");
+			$io->append("table: $source\tcolumn: $column\trow: $value\t select: @select\n");
 			$io->append("$column\t@select\n");
 			while ( my $row = $some_rows->next ) {
 				my @values;
