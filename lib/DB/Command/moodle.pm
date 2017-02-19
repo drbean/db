@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Jan 26, 10:48:39 PM
+# Last Edit: 2017 Feb 18, 09:28:54 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -35,7 +35,7 @@ sub execute {
 	$data = LoadFile "/var/lib/moodle/populate/" . $opt->{f} . ".yaml" if $opt->{f};
 
 	my $schema = DB::Schema->connect(
-		"dbi:Pg:dbname=$opt->{d};port=$opt->{p}"
+		"dbi:Pg:dbname=$opt->{d};port=$opt->{p};password=$opt->{w}"
 		, $opt->{u}
 		); 
 
