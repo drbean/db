@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Feb 18, 09:28:54 PM
+# Last Edit: 2017 Feb 19, 12:53:20 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -31,51 +31,55 @@ use DB::Schema;
 sub execute {
 	my ($self, $opt, $args) = @_;
 
+	my ($port, $user, $password, $database, $table, $file, $action, $column, $row, $select) = @$opt{qw/p u w d t f a c r s/};
 	my $data;
-	$data = LoadFile "/var/lib/moodle/populate/" . $opt->{f} . ".yaml" if $opt->{f};
+	$data = LoadFile "/var/lib/moodle/populate/$file.yaml" if $file;
 
 	my $schema = DB::Schema->connect(
-		"dbi:Pg:dbname=$opt->{d};port=$opt->{p};password=$opt->{w}"
-		, $opt->{u}
+		"dbi:Pg:dbname=$database;port=$port;password=$password"
+		, $user
 		); 
+	die "user $user of dbi:Pg:dbname=$database;port=$port;password=$password?"
+		unless $schema;
 
-	my $table = "Mdl_" . $opt->{t};
-	die "\"$table\" table?" unless $table;
-	(my $source = $table) =~ s/_(\w)/\u$1/g;
-	if ( $opt->{a} eq "create") {
-		my $class = $schema->resultset($source)->update_or_create($_) for @$data;
+	my $mdl_table = "Mdl_" . $table;
+	(my $source = $mdl_table) =~ s/_(\w)/\u$1/g;
+	my $resultset = $schema->resultset($source);
+	die "\"$source\" table?" unless $resultset;
+
+	if ( $action eq "create") {
+		my $class = $resultset->update_or_create($_) for @$data;
 	}
-	if ( $opt->{a} eq "delete" ) {
-		my $all_rows = $schema->resultset($source);
-		if ( $opt->{r} and $opt->{r} eq "all" ) {
+	if ( $action eq "delete" ) {
+		my $all_rows = $resultset;
+		if ( $row and $row eq "all" ) {
 			$all_rows->delete;
 		}
-		elsif ( $opt->{c} and $opt->{r} ) {
-			my $some_rows = $all_rows->search({ $opt->{c} => $opt->{r} });
+		elsif ( $column and $row ) {
+			my $some_rows = $resultset->search({ $column => $row });
 			$some_rows->delete();
 		}
 		else {
 			die "-r 'all' or -c 'column' WHERE -r 'row_value'.\n"}
 
 	}
-	if ( $opt->{a} eq "select" ) {
+	if ( $action eq "select" ) {
 		my $io = io('-');
 		# $io->autoflush;
-		$io->print("action: $opt->{a}\n");
-		my $all_rows = $schema->resultset($source);
-		if ( $opt->{r} and $opt->{r} eq "all" ) {
-			$io->append("table: $source\trow: $opt->{r}\n");
-			while ( my $row = $all_rows->next ) {
-				$io->append("$opt->{r}:\t" . $row->id . "\n");
+		$io->print("action: $action\n");
+		my $all_rows = $resultset;
+		if ( $row and $row eq "all" ) {
+			$io->append("table: $source\trow: $row\n");
+			while ( my $row_data = $all_rows->next ) {
+				$io->append("$row\t" . $row_data->id . "\n");
 			}
 		}
-		elsif ( $opt->{c} and $opt->{r} and $opt->{s}) {
-			my @select = split /,/, $opt->{s};
-			my $some_rows = $all_rows->search({ $opt->{c} => $opt->{r} });
+		elsif ( $column and $row and $select ) {
+			my @select = split /,/, $select ;
+			my $some_rows = $all_rows->search({ $column => $row });
 			$" = "\t";
-			$io->append("table: $source\tcolumn: $opt->{c}\trow: $opt->{r}\t select: @select\n");
-			$io->append("$opt->{c}\t@select\n");
-			my $column = $opt->{c};
+			$io->append("table: $source\tcolumn: $column\trow: $row\t select: @select\n");
+			$io->append("$column\t@select\n");
 			while ( my $row = $some_rows->next ) {
 				my @values;
 				push @values, $row->get_column( $_ ) for @select;
