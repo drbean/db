@@ -1,6 +1,6 @@
-package DB::Command::catalyst;
+package DB::Command::bett;
 
-# Last Edit: 2018 Nov 09, 08:30:58 PM
+# Last Edit: 2018 Nov 09, 08:45:05 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
