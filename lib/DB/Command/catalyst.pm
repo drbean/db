@@ -1,6 +1,6 @@
 package DB::Command::catalyst;
 
-# Last Edit: 2018 Nov 09, 12:17:58 PM
+# Last Edit: 2018 Nov 09, 08:30:58 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -74,7 +74,15 @@ sub execute {
 			}
 		}
 		elsif ( $key and $value and $select ) {
-			my $some_rows = $all_rows->search({ $key => $value });
+			my ( %key_value, @key, @value );
+			if ( @key = split /,/, $key and @value = split /,/, $value and scalar @key == scalar @value )
+			{
+				%key_value = map { $key[$_] => $value[$_] } 0..$#key;
+			}
+			else {
+				%key_value = ( $key => $value );
+			}
+			my $some_rows = $all_rows->search( \%key_value );
 			$" = "\t";
 			my @columns;
 			if ( $select eq "all" ) {
