@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2019 Jan 12, 03:59:11 PM
+# Last Edit: 2019 Jan 12, 04:28:31 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -65,8 +65,6 @@ sub execute {
 	}
 	if ( $action eq "select" ) {
 		my $io = io('-');
-		# $io->autoflush;
-		$io->print("action: $action\n");
 		my $all_rows = $resultset;
 		if ( $value and $value eq "all" ) {
 			$io->append("table: $source\trow: $value\n");
@@ -85,18 +83,17 @@ sub execute {
 				@columns = split /,/, $select ;
 			}
 			if ( @columns == 1 ) {
-				my @values;
 				while ( my $row = $some_rows->next ) {
 					for my $column ( @columns ) {
 						my $other_value = $row->get_column( $column ); 
 						$other_value //= "NULL";
-						push @values, $other_value;
+						$io->append($other_value . "\n");
 					}
 				}
-				return @values;
 			}
 			else 
 			{
+				$io->print("action: $action\n");
 				$io->append("table: $source\tkey: $key\tvalue: $value\t select: @columns\n");
 				$io->append("$key\t@columns\n");
 				while ( my $row = $some_rows->next ) {
@@ -109,6 +106,7 @@ sub execute {
 					$io->append("$value\t@values\n");
 				}
 			}
+		$io->autoflush;
 		}
 		else {
 			die "-v 'all' or -k 'key' SELECT -s 'extra,etc' WHERE -k 'column' = -v 'row_value'.\n"}
