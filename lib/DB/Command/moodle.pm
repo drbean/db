@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2017 Feb 19, 02:11:49 PM
+# Last Edit: 2019 Jan 12, 03:59:11 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -84,16 +84,30 @@ sub execute {
 			else {
 				@columns = split /,/, $select ;
 			}
-			$io->append("table: $source\tkey: $key\tvalue: $value\t select: @columns\n");
-			$io->append("$key\t@columns\n");
-			while ( my $row = $some_rows->next ) {
+			if ( @columns == 1 ) {
 				my @values;
-				for my $column ( @columns ) {
-					my $other_value = $row->get_column( $column ); 
-					$other_value //= "NULL";
-					push @values, $other_value;
+				while ( my $row = $some_rows->next ) {
+					for my $column ( @columns ) {
+						my $other_value = $row->get_column( $column ); 
+						$other_value //= "NULL";
+						push @values, $other_value;
+					}
 				}
-				$io->append("$value\t@values\n");
+				return @values;
+			}
+			else 
+			{
+				$io->append("table: $source\tkey: $key\tvalue: $value\t select: @columns\n");
+				$io->append("$key\t@columns\n");
+				while ( my $row = $some_rows->next ) {
+					my @values;
+					for my $column ( @columns ) {
+						my $other_value = $row->get_column( $column ); 
+						$other_value //= "NULL";
+						push @values, $other_value;
+					}
+					$io->append("$value\t@values\n");
+				}
 			}
 		}
 		else {
