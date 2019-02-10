@@ -1,6 +1,6 @@
 package DB::Command::bett;
 
-# Last Edit: 2018 Nov 09, 08:45:05 PM
+# Last Edit: 2018 Nov 13, 02:37:28 PM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -85,12 +85,12 @@ sub execute {
 			my $some_rows = $all_rows->search( \%key_value );
 			$" = "\t";
 			my @columns;
-			if ( $select eq "all" ) {
-				@columns = $some_rows->result_source->columns;
-			}
-			else {
+			#if ( $select eq "all" ) {
+			#	@columns = $some_rows->result_source->columns;
+			#}
+			#else {
 				@columns = split /,/, $select ;
-			}
+			#}
 			$io->append("table: $source\tkey: $key\tvalue: $value\t select: @columns\n");
 			$io->append("$key\t@columns\n");
 			while ( my $row = $some_rows->next ) {
