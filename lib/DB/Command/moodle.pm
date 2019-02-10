@@ -1,6 +1,6 @@
 package DB::Command::moodle;
 
-# Last Edit: 2019 Jan 12, 04:28:31 PM
+# Last Edit: 2019 Jan 15, 11:43:20 AM
 # $Id: /cloze/branches/ctest/dic.pl 1134 2007-03-17T11:05:37.500624Z greg  $
 
 use strict;
@@ -87,7 +87,8 @@ sub execute {
 					for my $column ( @columns ) {
 						my $other_value = $row->get_column( $column ); 
 						$other_value //= "NULL";
-						$io->append($other_value . "\n");
+						# $io->append($other_value . "\n");
+						print $other_value . "\n";
 					}
 				}
 			}
