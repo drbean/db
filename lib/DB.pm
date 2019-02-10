@@ -1,7 +1,7 @@
 package DB;
 
 # Created: 06/25/2016 10:28:33 AM
-# Last Edit: 2016 Jul 09, 09:36:54 PM
+# Last Edit: 2019 Feb 10, 09:11:50 PM
 # $Id$
 
 =head1 NAME
@@ -20,6 +20,8 @@ use strict;
 use warnings;
 
 use App::Cmd::Setup -app;
+
+# ABSTRACT: "Populate a database table using commandline script using App::Cmd, to avoid having to use web interface"
 
 =head1 DESCRIPTION
 
