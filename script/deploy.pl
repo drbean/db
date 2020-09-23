@@ -18,6 +18,7 @@ my $connect_info = {
 	dsn => "dbi:Pg:dbname=$name;port=5432",
 	user => '',
 	password => '',
+};
 
 my $schema = DB::Schema->connect( $connect_info );
 
